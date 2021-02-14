@@ -1,0 +1,28 @@
+#!/bin/sh
+
+branch="(git rev-parse --abbrev-ref HEAD)"
+exception_regex="(master|develop)"
+regex="^(feature|bugfix)/task-\d+"
+rename_message="Use Naming convention for branch name"
+check_old_message="Delete or update"
+contributor="(git log -1 --format=format:%ae HEAD)"
+INTERVAL=1209600 #seconds
+compare_date="(git for-each-ref refs/remotes/origin/$branch | while read commit type ref;do
+    current=$(date +%s)
+    headcd=$(git log -1 --pretty=%cd --date=format:%s ${commit})
+    if [[ $((current-headcd)) -ge ${INTERVAL} ]];then
+        echo $ref
+    fi
+done)"
+
+if [[ $branch = $exception_regex ]]
+than exit 0
+
+    elif [[ ! $branch =~ $regex ]]
+    then
+        sendmail $contributor < $rename_message
+        exit 1
+    elif [[ $compare_date = true ]]
+        sendmail $contributor < $check_old_message
+        exit 0
+exit 0
